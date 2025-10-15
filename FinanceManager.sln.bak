@@ -1,0 +1,16 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PhotinoBlazorApp1", "PhotinoBlazorApp1\PhotinoBlazorApp1.csproj", "{351D8F51-7D8D-4677-A2A6-7A93CB2674DB}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{351D8F51-7D8D-4677-A2A6-7A93CB2674DB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{351D8F51-7D8D-4677-A2A6-7A93CB2674DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{351D8F51-7D8D-4677-A2A6-7A93CB2674DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{351D8F51-7D8D-4677-A2A6-7A93CB2674DB}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
