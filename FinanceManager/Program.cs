@@ -7,6 +7,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.FluentUI.AspNetCore.Components;
 using Photino.Blazor;
 
+
+
 namespace FinanceManager
 {
     class Program
