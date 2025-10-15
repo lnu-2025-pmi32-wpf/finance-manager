@@ -1,4 +1,8 @@
 ﻿using System;
+using System.IO;
+using FinanceManager.Data;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.FluentUI.AspNetCore.Components;
 using Photino.Blazor;
@@ -11,8 +15,17 @@ namespace FinanceManager
         static void Main(string[] args)
         {
             var appBuilder = PhotinoBlazorAppBuilder.CreateDefault(args);
+            
+            // Configuration setup
+            var configuration = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                .Build();
 
             appBuilder.Services
+                .AddSingleton<IConfiguration>(configuration)
+                .AddDbContext<AppDbContext>(options =>
+                    options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")))
                 .AddFluentUIComponents()
                 .AddLogging();
 
@@ -24,7 +37,7 @@ namespace FinanceManager
             // customize window
             app.MainWindow
                 .SetIconFile("favicon.ico")
-                .SetTitle("Photino Blazor Sample");
+                .SetTitle("Finance Manager");
 
             AppDomain.CurrentDomain.UnhandledException += (sender, error) => { app.MainWindow.ShowMessage("Fatal exception", error.ExceptionObject.ToString()); };
 
