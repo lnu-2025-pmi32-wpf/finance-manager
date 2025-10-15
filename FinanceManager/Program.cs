@@ -36,6 +36,15 @@ namespace FinanceManager
 
             var app = appBuilder.Build();
 
+#if DEBUG
+            // Seed the database with test data during development
+            using (var scope = app.Services.CreateScope())
+            {
+                var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+                DataSeeder.Seed(dbContext);
+            }
+#endif
+
             // customize window
             app.MainWindow
                 .SetIconFile("favicon.ico")
