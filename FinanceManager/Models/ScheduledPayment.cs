@@ -1,15 +1,20 @@
 
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using FinanceManager.Enums;
 
 namespace FinanceManager.Models;
 
-public class Transaction
+public class ScheduledPayment
 {
     [Key]
-    public int TransactionId { get; set; }
+    public int PaymentId { get; set; }
+
+    [Required]
+    public int ProfileId { get; set; }
+    [ForeignKey("ProfileId")]
+    public FinancialProfile FinancialProfile { get; set; }
 
     [Required]
     public int AccountId { get; set; }
@@ -23,10 +28,12 @@ public class Transaction
     [Required]
     public decimal Amount { get; set; }
 
-    [Required]
-    public DateTime TransactionDateTime { get; set; }
-
+    [StringLength(255)]
     public string Description { get; set; }
 
-    public ICollection<Tag> Tags { get; set; } = new List<Tag>();
+    [Required]
+    public ScheduledPaymentFrequency Frequency { get; set; }
+
+    [Required]
+    public DateTime NextExecutionDate { get; set; }
 }
