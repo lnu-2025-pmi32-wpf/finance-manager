@@ -1,58 +1,55 @@
 using System;
-using System.Linq;
 using System.Windows;
-using FinanceManager.BLL.Services;
-using FinanceManager.Models;
+using FinanceManager.UI.Views;
 
 namespace FinanceManager.UI;
 
 public partial class MainWindow : Window
 {
-    private readonly IFinancialProfileService _profileService;
+    private readonly DashboardView _dashboardView;
+    private readonly Views.CategoriesView _categoriesView;
+    private readonly Views.AccountsView _accountsView;
+    private readonly Views.TransactionsView _transactionsView;
 
-    public MainWindow(IFinancialProfileService profileService)
+    public MainWindow(DashboardView dashboardView, Views.CategoriesView categoriesView, Views.AccountsView accountsView, Views.TransactionsView transactionsView)
     {
         InitializeComponent();
-        _profileService = profileService;
+        _dashboardView = dashboardView;
+        _categoriesView = categoriesView;
+        _accountsView = accountsView;
+        _transactionsView = transactionsView;
 
-        LoadProfiles();
+        // show dashboard by default
+        ContentArea.Content = _dashboardView;
     }
 
-    private void LoadProfiles()
+    private void NavDashboard_Click(object sender, RoutedEventArgs e)
     {
-        var profiles = _profileService.GetAllProfiles().Select(p => p.Name).ToList();
-        ProfilesListBox.ItemsSource = profiles;
+        ContentArea.Content = _dashboardView;
     }
 
-    private void MenuExit_Click(object sender, RoutedEventArgs e)
+    private void NavAccounts_Click(object sender, RoutedEventArgs e)
     {
-        Application.Current.Shutdown();
+        ContentArea.Content = _accountsView;
     }
 
-    private void MenuAbout_Click(object sender, RoutedEventArgs e)
+    private void NavCategories_Click(object sender, RoutedEventArgs e)
     {
-        MessageBox.Show("Finance Manager - WPF UI", "About");
+        ContentArea.Content = _categoriesView;
     }
 
-    private void AddProfile_Click(object sender, RoutedEventArgs e)
+    private void NavTransactions_Click(object sender, RoutedEventArgs e)
     {
-        var name = ProfileNameTextBox.Text?.Trim();
-        if (string.IsNullOrWhiteSpace(name))
-        {
-            MessageBox.Show("Enter a profile name.", "Validation", MessageBoxButton.OK, MessageBoxImage.Warning);
-            return;
-        }
-
-        MessageBox.Show($"(Demo) Would add profile: {name}");
+        ContentArea.Content = _transactionsView;
     }
 
-    private void EditProfile_Click(object sender, RoutedEventArgs e)
+    private void NavProfiles_Click(object sender, RoutedEventArgs e)
     {
-        MessageBox.Show("(Demo) Edit profile");
+        MessageBox.Show("Profiles view not implemented yet");
     }
 
-    private void DeleteProfile_Click(object sender, RoutedEventArgs e)
+    private void NavAnalytics_Click(object sender, RoutedEventArgs e)
     {
-        MessageBox.Show("(Demo) Delete profile");
+        MessageBox.Show("Analytics view not implemented yet");
     }
 }

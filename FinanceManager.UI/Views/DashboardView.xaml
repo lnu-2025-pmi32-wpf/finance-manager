@@ -1,0 +1,77 @@
+<UserControl x:Class="FinanceManager.UI.Views.DashboardView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d">
+    <Grid Background="#071025" Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <StackPanel Orientation="Vertical">
+            <TextBlock Text="Dashboard" FontSize="28" Foreground="White" />
+            <TextBlock Text="Welcome back! Here's your financial overview" Foreground="#B0B7C3" Margin="0,4,0,12" />
+        </StackPanel>
+
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*" />
+                <ColumnDefinition Width="3*" />
+            </Grid.ColumnDefinitions>
+
+            <StackPanel Orientation="Vertical" Grid.Column="0" Margin="0,0,12,0">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" Margin="0,0,0,12">
+                    <Border Background="#0B2233" CornerRadius="6" Padding="12" Margin="0,0,12,0" Width="140">
+                        <StackPanel>
+                            <TextBlock Text="Total Balance" Foreground="#AFCFE0" />
+                            <TextBlock Text="{Binding TotalBalance, StringFormat=C}" Foreground="#A7F3D0" FontSize="18" />
+                        </StackPanel>
+                    </Border>
+                    <Border Background="#0B2233" CornerRadius="6" Padding="12" Margin="0,0,12,0" Width="140">
+                        <StackPanel>
+                            <TextBlock Text="Total Expenses" Foreground="#AFCFE0" />
+                            <TextBlock Text="{Binding TotalExpenses, StringFormat=C}" Foreground="#FF6B6B" FontSize="18" />
+                        </StackPanel>
+                    </Border>
+                    <Border Background="#0B2233" CornerRadius="6" Padding="12" Width="140">
+                        <StackPanel>
+                            <TextBlock Text="Total Income" Foreground="#AFCFE0" />
+                            <TextBlock Text="{Binding TotalIncome, StringFormat=C}" Foreground="#7EE787" FontSize="18" />
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+
+                <Border Background="#0B2233" CornerRadius="6" Padding="12" Height="220">
+                    <StackPanel>
+                        <TextBlock Text="Category Breakdown" Foreground="White" FontSize="16" />
+                        <ListBox ItemsSource="{Binding Categories}" Margin="0,8,0,0" Background="Transparent" BorderThickness="0">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <DockPanel Margin="0,4">
+                                        <TextBlock Text="{Binding Name}" Foreground="#CBE8F8" Width="140" />
+                                        <TextBlock Text="{Binding Amount, StringFormat=C}" Foreground="#E6EEF3" HorizontalAlignment="Right" />
+                                    </DockPanel>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+
+            <StackPanel Grid.Column="1" Orientation="Vertical">
+                <Border Background="#0B2233" CornerRadius="6" Padding="12" Height="120" Margin="0,0,0,12">
+                    <StackPanel>
+                        <TextBlock Text="Quick Actions" Foreground="White" FontSize="16" />
+                        <StackPanel Orientation="Vertical" Margin="0,8,0,0">
+                            <Button Content="Add Income" Margin="0,4,0,0" Click="AddIncome_Click" />
+                            <Button Content="Add Expense" Margin="0,4,0,0" Click="AddExpense_Click" />
+                            <Button Content="View All Transactions" Margin="0,4,0,0" Click="ViewTransactions_Click" />
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</UserControl>

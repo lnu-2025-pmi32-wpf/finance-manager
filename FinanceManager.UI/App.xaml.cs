@@ -46,13 +46,31 @@ public partial class App : Application
             services.AddDbContext<AppDbContext>(options =>
                 options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
 
-            // BLL
+            // BLL - register services
             services.AddScoped<IFinancialProfileService, FinancialProfileService>();
+            services.AddScoped<IAccountService, FinanceManager.BLL.Services.AccountService>();
+            services.AddScoped<ITransactionService, FinanceManager.BLL.Services.TransactionService>();
+            services.AddScoped<ICategoryService, FinanceManager.BLL.Services.CategoryService>();
 
             // UI
             services.AddTransient<MainWindow>();
+            services.AddTransient<Views.DashboardView>();
+            services.AddScoped<ViewModels.DashboardViewModel>();
+            services.AddTransient<Views.CategoriesView>();
+            services.AddScoped<ViewModels.CategoriesViewModel>();
+            services.AddTransient<Views.AccountsView>();
+            services.AddScoped<ViewModels.AccountsViewModel>();
+            services.AddTransient<Views.TransactionsView>();
+            services.AddScoped<ViewModels.TransactionsViewModel>();
 
             _serviceProvider = services.BuildServiceProvider();
+
+            // Seed DB in development (uses DAL DataSeeder)
+            using (var scope = _serviceProvider.CreateScope())
+            {
+                var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+                FinanceManager.Data.DataSeeder.Seed(db);
+            }
 
             var mainWindow = _serviceProvider.GetRequiredService<MainWindow>();
             mainWindow.Show();
