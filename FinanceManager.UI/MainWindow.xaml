@@ -2,21 +2,21 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Finance Manager" Height="720" Width="1200">
-    <Grid>
+    <Grid Background="{StaticResource BackgroundBrush}">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="220" />
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
         <!-- Sidebar -->
-    <StackPanel Grid.Column="0" Background="#041521" Margin="12">
+    <StackPanel Grid.Column="0" Background="{StaticResource SidebarBrush}" Margin="12">
             <TextBlock Text="Finance Manager" Foreground="White" FontSize="16" Margin="6" />
-            <Button Content="Dashboard" Margin="6" Click="NavDashboard_Click" />
-            <Button Content="Accounts" Margin="6" Click="NavAccounts_Click" />
-            <Button Content="Categories" Margin="6" Click="NavCategories_Click" />
-            <Button Content="Transactions" Margin="6" Click="NavTransactions_Click" />
-            <Button Content="Profiles" Margin="6" Click="NavProfiles_Click" />
-            <Button Content="Analytics" Margin="6" Click="NavAnalytics_Click" />
+            <Button Content="Dashboard" Style="{StaticResource SidebarButton}" Click="NavDashboard_Click" />
+            <Button Content="Accounts" Style="{StaticResource SidebarButton}" Click="NavAccounts_Click" />
+            <Button Content="Categories" Style="{StaticResource SidebarButton}" Click="NavCategories_Click" />
+            <Button Content="Transactions" Style="{StaticResource SidebarButton}" Click="NavTransactions_Click" />
+            <Button Content="Profiles" Style="{StaticResource SidebarButton}" Click="NavProfiles_Click" />
+            <Button Content="Analytics" Style="{StaticResource SidebarButton}" Click="NavAnalytics_Click" />
         </StackPanel>
 
         <!-- Content area -->

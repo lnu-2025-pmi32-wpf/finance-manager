@@ -22,8 +22,8 @@ public class Category
     public CategoryType Type { get; set; }
 
     [StringLength(255)]
-    public string Icon { get; set; }
+    public string? Icon { get; set; }
 
     [StringLength(7)]
-    public string ColorHex { get; set; }
+    public string? ColorHex { get; set; }
 }

@@ -10,14 +10,16 @@ public partial class MainWindow : Window
     private readonly Views.CategoriesView _categoriesView;
     private readonly Views.AccountsView _accountsView;
     private readonly Views.TransactionsView _transactionsView;
+    private readonly Views.AnalyticsView _analyticsView;
 
-    public MainWindow(DashboardView dashboardView, Views.CategoriesView categoriesView, Views.AccountsView accountsView, Views.TransactionsView transactionsView)
+    public MainWindow(DashboardView dashboardView, Views.CategoriesView categoriesView, Views.AccountsView accountsView, Views.TransactionsView transactionsView, Views.AnalyticsView analyticsView)
     {
         InitializeComponent();
         _dashboardView = dashboardView;
         _categoriesView = categoriesView;
         _accountsView = accountsView;
         _transactionsView = transactionsView;
+        _analyticsView = analyticsView;
 
         // show dashboard by default
         ContentArea.Content = _dashboardView;
@@ -50,6 +52,6 @@ public partial class MainWindow : Window
 
     private void NavAnalytics_Click(object sender, RoutedEventArgs e)
     {
-        MessageBox.Show("Analytics view not implemented yet");
+        ContentArea.Content = _analyticsView;
     }
 }

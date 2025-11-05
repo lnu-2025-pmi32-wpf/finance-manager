@@ -84,6 +84,23 @@ public partial class TransactionEditWindow : Window
             return;
         }
 
+        // Validate amount sign matches category type (if category selected)
+        if (CmbCategory.SelectedItem is CategoryDto selectedCat)
+        {
+            // Category.Type: Expense -> amount should be negative; Income -> positive
+            if (selectedCat.Type.ToString().ToLower().StartsWith("expense") && Transaction.Amount > 0)
+            {
+                // auto-correct to negative and inform user
+                Transaction.Amount = -Transaction.Amount;
+                MessageBox.Show("Amount was converted to negative because the selected category is an Expense.", "Amount adjusted", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            else if (selectedCat.Type.ToString().ToLower().StartsWith("income") && Transaction.Amount < 0)
+            {
+                Transaction.Amount = -Transaction.Amount;
+                MessageBox.Show("Amount was converted to positive because the selected category is an Income.", "Amount adjusted", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+        }
+
         DialogResult = true;
     }
 }

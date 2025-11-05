@@ -29,6 +29,11 @@ public class DashboardViewModel : BaseViewModel
         _categoryService = categoryService;
     }
 
+    public async Task<TransactionDto> CreateTransactionAsync(TransactionDto dto)
+    {
+        return await _transactionService.CreateAsync(dto);
+    }
+
     public async Task LoadAsync()
     {
         TotalBalance = await _accountService.GetTotalBalanceAsync();

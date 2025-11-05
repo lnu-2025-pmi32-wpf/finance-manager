@@ -32,8 +32,7 @@ public partial class TransactionsView : UserControl
         };
 
         BtnExport.Click += (_, __) => ExportCsv();
-        BtnAdd.Click += BtnAdd_Click;
-        BtnEdit.Click += BtnEdit_Click;
+    BtnAdd.Click += BtnAdd_Click;
     }
 
     private async void BtnAdd_Click(object sender, RoutedEventArgs e)
@@ -80,5 +79,37 @@ public partial class TransactionsView : UserControl
         var path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "transactions_export.csv");
         File.WriteAllText(path, sb.ToString(), Encoding.UTF8);
         MessageBox.Show($"Exported to: {path}", "Export", MessageBoxButton.OK, MessageBoxImage.Information);
+    }
+
+    private async void OnDeleteItem(object sender, RoutedEventArgs e)
+    {
+        if (sender is FrameworkElement fe && fe.DataContext is ViewModels.TransactionListItem item)
+        {
+            // find underlying TransactionDto
+            var dto = _vm.Transactions.FirstOrDefault(t => t.TransactionId == item.TransactionId);
+            if (dto == null) return;
+            var ok = MessageBox.Show($"Delete transaction #{dto.TransactionId}?", "Confirm", MessageBoxButton.YesNo, MessageBoxImage.Question);
+            if (ok == MessageBoxResult.Yes)
+            {
+                await _vm.DeleteByIdAsync(dto.TransactionId);
+            }
+        }
+    }
+
+    private async void OnEditItem(object sender, RoutedEventArgs e)
+    {
+        if (sender is FrameworkElement fe && fe.DataContext is ViewModels.TransactionListItem item)
+        {
+            var dto = _vm.Transactions.FirstOrDefault(t => t.TransactionId == item.TransactionId);
+            if (dto == null) return;
+            await _vm.LoadAccountsAndCategoriesAsync();
+            var dlg = new TransactionEditWindow(dto, _vm.Accounts, _vm.Categories) { Owner = Window.GetWindow(this) };
+            if (dlg.ShowDialog() == true)
+            {
+                var updated = dlg.Transaction;
+                await _vm.UpdateAsync(updated);
+                await _vm.LoadAsync();
+            }
+        }
     }
 }
