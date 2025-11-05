@@ -2,7 +2,7 @@ using FinanceManager.Enums;
 using FinanceManager.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace FinanceManager.Legacy.Data;
+namespace FinanceManager.Data;
 
 public class AppDbContext : DbContext
 {

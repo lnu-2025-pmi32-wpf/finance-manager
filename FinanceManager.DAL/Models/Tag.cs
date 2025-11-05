@@ -1,14 +1,13 @@
-
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace FinanceManager.Legacy.Models;
+namespace FinanceManager.Models;
 
-public class Account
+public class Tag
 {
     [Key]
-    public int AccountId { get; set; }
+    public int TagId { get; set; }
 
     [Required]
     public int ProfileId { get; set; }
@@ -16,17 +15,8 @@ public class Account
     public FinancialProfile FinancialProfile { get; set; }
 
     [Required]
-    [StringLength(100)]
+    [StringLength(50)]
     public string Name { get; set; }
-
-    [Required]
-    public decimal Balance { get; set; }
-
-    [Required]
-    [StringLength(3)]
-    public string CurrencyCode { get; set; }
-    [ForeignKey("CurrencyCode")]
-    public Currency Currency { get; set; }
 
     public ICollection<Transaction> Transactions { get; set; } = new List<Transaction>();
 }

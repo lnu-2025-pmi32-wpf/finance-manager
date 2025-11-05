@@ -1,7 +1,6 @@
-
 using System.ComponentModel.DataAnnotations;
 
-namespace FinanceManager.Legacy.Models;
+namespace FinanceManager.Models;
 
 public class Currency
 {

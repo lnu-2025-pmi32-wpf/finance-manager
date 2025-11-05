@@ -1,8 +1,7 @@
-
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace FinanceManager.Legacy.Models;
+namespace FinanceManager.Models;
 
 public class User
 {

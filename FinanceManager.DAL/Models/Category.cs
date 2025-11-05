@@ -1,14 +1,13 @@
-
-using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using FinanceManager.Enums;
 
-namespace FinanceManager.Legacy.Models;
+namespace FinanceManager.Models;
 
-public class Goal
+public class Category
 {
     [Key]
-    public int GoalId { get; set; }
+    public int CategoryId { get; set; }
 
     [Required]
     public int ProfileId { get; set; }
@@ -16,14 +15,15 @@ public class Goal
     public FinancialProfile FinancialProfile { get; set; }
 
     [Required]
-    [StringLength(100)]
+    [StringLength(255)]
     public string Name { get; set; }
 
     [Required]
-    public decimal TargetAmount { get; set; }
+    public CategoryType Type { get; set; }
 
-    [Required]
-    public decimal CurrentAmount { get; set; }
+    [StringLength(255)]
+    public string Icon { get; set; }
 
-    public DateTime? TargetDate { get; set; }
+    [StringLength(7)]
+    public string ColorHex { get; set; }
 }

@@ -1,6 +1,6 @@
 ﻿using System;
 using System.IO;
-using FinanceManager.Data;
+using FinanceManager.Legacy.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

@@ -1,10 +1,9 @@
-
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using FinanceManager.Enums;
 
-namespace FinanceManager.Legacy.Models;
+namespace FinanceManager.Models;
 
 public class ScheduledPayment
 {

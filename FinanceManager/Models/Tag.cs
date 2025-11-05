@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace FinanceManager.Models;
+namespace FinanceManager.Legacy.Models;
 
 public class Tag
 {

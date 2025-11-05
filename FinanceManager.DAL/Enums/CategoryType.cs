@@ -1,5 +1,4 @@
-
-namespace FinanceManager.Legacy.Enums;
+namespace FinanceManager.Enums;
 
 public enum CategoryType
 {
