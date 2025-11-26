@@ -1,84 +1,89 @@
-using System;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Windows;
-using System.Windows.Controls;
-using FinanceManager.UI.ViewModels;
-
-namespace FinanceManager.UI.Views;
-
-public partial class TransactionsView : UserControl
+namespace FinanceManager.UI.Views
 {
-    private readonly TransactionsViewModel _vm;
+    // <copyright file="TransactionsView.xaml.cs" company="LNU">
+    // Copyright (c) LNU. All rights reserved.
+    // </copyright>
 
-    public TransactionsView(TransactionsViewModel vm)
+    using System;
+    using System.IO;
+    using System.Linq;
+    using System.Text;
+    using System.Windows;
+    using System.Windows.Controls;
+    using FinanceManager.UI.ViewModels;
+
+    public partial class TransactionsView : UserControl
     {
-        InitializeComponent();
-        _vm = vm;
-        DataContext = _vm;
+        private readonly TransactionsViewModel vm;
 
-        Loaded += async (_, __) =>
+        public TransactionsView(TransactionsViewModel vm)
         {
-            await _vm.LoadAccountsAndCategoriesAsync();
-            await _vm.LoadAsync();
-        };
+            InitializeComponent();
+            this.vm = vm;
+            this.DataContext = this.vm;
 
-        BtnRefresh.Click += async (_, __) =>
-        {
-            _vm.SearchText = TxtSearch.Text;
-            _vm.FilterType = (CmbType.SelectedItem as ComboBoxItem)?.Content?.ToString()?.ToLower();
-            await _vm.LoadAsync();
-        };
+            this.Loaded += async (_, __) =>
+            {
+                await this.vm.LoadAccountsAndCategoriesAsync();
+                await this.vm.LoadAsync();
+            };
 
-        BtnExport.Click += (_, __) => ExportCsv();
-        BtnAdd.Click += BtnAdd_Click;
-        BtnEdit.Click += BtnEdit_Click;
-    }
+            this.BtnRefresh.Click += async (_, __) =>
+            {
+                this.vm.SearchText = this.TxtSearch.Text;
+                this.vm.FilterType = (this.CmbType.SelectedItem as ComboBoxItem)?.Content?.ToString()?.ToLower();
+                await this.vm.LoadAsync();
+            };
 
-    private async void BtnAdd_Click(object sender, RoutedEventArgs e)
-    {
-        await _vm.LoadAccountsAndCategoriesAsync();
-        var dlg = new TransactionEditWindow(_vm.Accounts, _vm.Categories) { Owner = Window.GetWindow(this) };
-        if (dlg.ShowDialog() == true)
-        {
-            var dto = dlg.Transaction;
-            await _vm.CreateAsync(dto);
-            await _vm.LoadAsync();
-        }
-    }
-
-    private async void BtnEdit_Click(object sender, RoutedEventArgs e)
-    {
-        if (_vm.Selected == null) return;
-        await _vm.LoadAccountsAndCategoriesAsync();
-        var dlg = new TransactionEditWindow(_vm.Selected, _vm.Accounts, _vm.Categories) { Owner = Window.GetWindow(this) };
-        if (dlg.ShowDialog() == true)
-        {
-            var dto = dlg.Transaction;
-            await _vm.UpdateAsync(dto);
-            await _vm.LoadAsync();
-        }
-    }
-
-    private void ExportCsv()
-    {
-        var list = _vm.Transactions.ToList();
-        if (!list.Any())
-        {
-            MessageBox.Show("No transactions to export.", "Export", MessageBoxButton.OK, MessageBoxImage.Information);
-            return;
+            this.BtnExport.Click += (_, __) => ExportCsv();
+            this.BtnAdd.Click += BtnAdd_Click;
+            this.BtnEdit.Click += BtnEdit_Click;
         }
 
-        var sb = new StringBuilder();
-        sb.AppendLine("Id,Date,Description,Amount");
-        foreach (var t in list)
+        private async void BtnAdd_Click(object sender, RoutedEventArgs e)
         {
-            sb.AppendLine($"{t.TransactionId},\"{t.TransactionDateTime:O}\",\"{(t.Description ?? string.Empty).Replace("\"","\"\"")}\",{t.Amount}");
+            await this.vm.LoadAccountsAndCategoriesAsync();
+            var dlg = new TransactionEditWindow(this.vm.Accounts, this.vm.Categories) { Owner = Window.GetWindow(this) };
+            if (dlg.ShowDialog() == true)
+            {
+                var dto = dlg.Transaction;
+                await this.vm.CreateAsync(dto);
+                await this.vm.LoadAsync();
+            }
         }
 
-        var path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "transactions_export.csv");
-        File.WriteAllText(path, sb.ToString(), Encoding.UTF8);
-        MessageBox.Show($"Exported to: {path}", "Export", MessageBoxButton.OK, MessageBoxImage.Information);
+        private async void BtnEdit_Click(object sender, RoutedEventArgs e)
+        {
+            if (this.vm.Selected == null) return;
+            await this.vm.LoadAccountsAndCategoriesAsync();
+            var dlg = new TransactionEditWindow(this.vm.Selected, this.vm.Accounts, this.vm.Categories) { Owner = Window.GetWindow(this) };
+            if (dlg.ShowDialog() == true)
+            {
+                var dto = dlg.Transaction;
+                await this.vm.UpdateAsync(dto);
+                await this.vm.LoadAsync();
+            }
+        }
+
+        private void ExportCsv()
+        {
+            var list = this.vm.Transactions.ToList();
+            if (!list.Any())
+            {
+                MessageBox.Show("No transactions to export.", "Export", MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
+
+            var sb = new StringBuilder();
+            sb.AppendLine("Id,Date,Description,Amount");
+            foreach (var t in list)
+            {
+                sb.AppendLine($"{t.TransactionId},\"{t.TransactionDateTime:O}\",\"{(t.Description ?? string.Empty).Replace("\"","\"\"")}\",{t.Amount}");
+            }
+
+            var path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "transactions_export.csv");
+            File.WriteAllText(path, sb.ToString(), Encoding.UTF8);
+            MessageBox.Show($"Exported to: {path}", "Export", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
     }
 }

@@ -1,44 +1,49 @@
-using System.Windows;
-using System.Windows.Controls;
-using FinanceManager.UI.ViewModels;
-
-namespace FinanceManager.UI.Views;
-
-public partial class CategoriesView : UserControl
+namespace FinanceManager.UI.Views
 {
-    private readonly CategoriesViewModel _vm;
+    // <copyright file="CategoriesView.xaml.cs" company="LNU">
+    // Copyright (c) LNU. All rights reserved.
+    // </copyright>
 
-    public CategoriesView(CategoriesViewModel vm)
+    using System.Windows;
+    using System.Windows.Controls;
+    using FinanceManager.UI.ViewModels;
+
+    public partial class CategoriesView : UserControl
     {
-        InitializeComponent();
-        _vm = vm;
-        DataContext = _vm;
+        private readonly CategoriesViewModel vm;
 
-        Loaded += async (_, __) => await _vm.LoadAsync();
-
-        BtnAdd.Click += BtnAdd_Click;
-        BtnEdit.Click += BtnEdit_Click;
-        BtnDelete.Click += async (_, __) => await _vm.DeleteSelected();
-    }
-
-    private void BtnAdd_Click(object sender, RoutedEventArgs e)
-    {
-        var dlg = new CategoryEditWindow();
-        if (dlg.ShowDialog() == true)
+        public CategoriesView(CategoriesViewModel vm)
         {
-            var dto = dlg.Category;
-            _ = _vm.CreateAsync(dto).ContinueWith(async t => await _vm.LoadAsync());
+            InitializeComponent();
+            this.vm = vm;
+            this.DataContext = this.vm;
+
+            this.Loaded += async (_, __) => await this.vm.LoadAsync();
+
+            this.BtnAdd.Click += BtnAdd_Click;
+            this.BtnEdit.Click += BtnEdit_Click;
+            this.BtnDelete.Click += async (_, __) => await this.vm.DeleteSelected();
         }
-    }
 
-    private void BtnEdit_Click(object sender, RoutedEventArgs e)
-    {
-        if (_vm.Selected == null) return;
-        var dlg = new CategoryEditWindow(_vm.Selected);
-        if (dlg.ShowDialog() == true)
+        private void BtnAdd_Click(object sender, RoutedEventArgs e)
         {
-            var dto = dlg.Category;
-            _ = _vm.UpdateAsync(dto).ContinueWith(async t => await _vm.LoadAsync());
+            var dlg = new CategoryEditWindow();
+            if (dlg.ShowDialog() == true)
+            {
+                var dto = dlg.Category;
+                _ = this.vm.CreateAsync(dto).ContinueWith(async t => await this.vm.LoadAsync());
+            }
+        }
+
+        private void BtnEdit_Click(object sender, RoutedEventArgs e)
+        {
+            if (this.vm.Selected == null) return;
+            var dlg = new CategoryEditWindow(this.vm.Selected);
+            if (dlg.ShowDialog() == true)
+            {
+                var dto = dlg.Category;
+                _ = this.vm.UpdateAsync(dto).ContinueWith(async t => await this.vm.LoadAsync());
+            }
         }
     }
 }

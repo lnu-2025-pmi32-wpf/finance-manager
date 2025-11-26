@@ -1,55 +1,60 @@
-using System;
-using System.Windows;
-using FinanceManager.UI.Views;
-
-namespace FinanceManager.UI;
-
-public partial class MainWindow : Window
+namespace FinanceManager.UI
 {
-    private readonly DashboardView _dashboardView;
-    private readonly Views.CategoriesView _categoriesView;
-    private readonly Views.AccountsView _accountsView;
-    private readonly Views.TransactionsView _transactionsView;
+    // <copyright file="MainWindow.xaml.cs" company="LNU">
+    // Copyright (c) LNU. All rights reserved.
+    // </copyright>
 
-    public MainWindow(DashboardView dashboardView, Views.CategoriesView categoriesView, Views.AccountsView accountsView, Views.TransactionsView transactionsView)
+    using System;
+    using System.Windows;
+    using FinanceManager.UI.Views;
+
+    public partial class MainWindow : Window
     {
-        InitializeComponent();
-        _dashboardView = dashboardView;
-        _categoriesView = categoriesView;
-        _accountsView = accountsView;
-        _transactionsView = transactionsView;
+        private readonly DashboardView dashboardView;
+        private readonly Views.CategoriesView categoriesView;
+        private readonly Views.AccountsView accountsView;
+        private readonly Views.TransactionsView transactionsView;
 
-        // show dashboard by default
-        ContentArea.Content = _dashboardView;
-    }
+        public MainWindow(DashboardView dashboardView, Views.CategoriesView categoriesView, Views.AccountsView accountsView, Views.TransactionsView transactionsView)
+        {
+            InitializeComponent();
+            this.dashboardView = dashboardView;
+            this.categoriesView = categoriesView;
+            this.accountsView = accountsView;
+            this.transactionsView = transactionsView;
 
-    private void NavDashboard_Click(object sender, RoutedEventArgs e)
-    {
-        ContentArea.Content = _dashboardView;
-    }
+            // show dashboard by default
+            ContentArea.Content = this.dashboardView;
+        }
 
-    private void NavAccounts_Click(object sender, RoutedEventArgs e)
-    {
-        ContentArea.Content = _accountsView;
-    }
+        private void NavDashboard_Click(object sender, RoutedEventArgs e)
+        {
+            ContentArea.Content = this.dashboardView;
+        }
 
-    private void NavCategories_Click(object sender, RoutedEventArgs e)
-    {
-        ContentArea.Content = _categoriesView;
-    }
+        private void NavAccounts_Click(object sender, RoutedEventArgs e)
+        {
+            ContentArea.Content = this.accountsView;
+        }
 
-    private void NavTransactions_Click(object sender, RoutedEventArgs e)
-    {
-        ContentArea.Content = _transactionsView;
-    }
+        private void NavCategories_Click(object sender, RoutedEventArgs e)
+        {
+            ContentArea.Content = this.categoriesView;
+        }
 
-    private void NavProfiles_Click(object sender, RoutedEventArgs e)
-    {
-        MessageBox.Show("Profiles view not implemented yet");
-    }
+        private void NavTransactions_Click(object sender, RoutedEventArgs e)
+        {
+            ContentArea.Content = this.transactionsView;
+        }
 
-    private void NavAnalytics_Click(object sender, RoutedEventArgs e)
-    {
-        MessageBox.Show("Analytics view not implemented yet");
+        private void NavProfiles_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("Profiles view not implemented yet");
+        }
+
+        private void NavAnalytics_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("Analytics view not implemented yet");
+        }
     }
 }

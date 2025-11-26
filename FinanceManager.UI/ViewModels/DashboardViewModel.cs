@@ -1,43 +1,48 @@
-using System.Collections.ObjectModel;
-using System.Threading.Tasks;
-using FinanceManager.BLL.Models;
-using FinanceManager.BLL.Services;
+// <copyright file="DashboardViewModel.cs" company="LNU">
+// Copyright (c) LNU. All rights reserved.
+// </copyright>
 
-namespace FinanceManager.UI.ViewModels;
-
-public class DashboardViewModel : BaseViewModel
+namespace FinanceManager.UI.ViewModels
 {
-    private readonly IAccountService _accountService;
-    private readonly ITransactionService _transactionService;
-    private readonly ICategoryService _categoryService;
+    using System.Collections.ObjectModel;
+    using System.Threading.Tasks;
+    using FinanceManager.BLL.Models;
+    using FinanceManager.BLL.Services;
 
-    private decimal _totalBalance;
-    public decimal TotalBalance { get => _totalBalance; set { _totalBalance = value; Raise(); } }
-
-    private decimal _totalExpenses;
-    public decimal TotalExpenses { get => _totalExpenses; set { _totalExpenses = value; Raise(); } }
-
-    private decimal _totalIncome;
-    public decimal TotalIncome { get => _totalIncome; set { _totalIncome = value; Raise(); } }
-
-    public ObservableCollection<CategoryBreakdownDto> Categories { get; } = new ObservableCollection<CategoryBreakdownDto>();
-
-    public DashboardViewModel(IAccountService accountService, ITransactionService transactionService, ICategoryService categoryService)
+    public class DashboardViewModel : BaseViewModel
     {
-        _accountService = accountService;
-        _transactionService = transactionService;
-        _categoryService = categoryService;
-    }
+        private readonly IAccountService _accountService;
+        private readonly ITransactionService _transactionService;
+        private readonly ICategoryService _categoryService;
 
-    public async Task LoadAsync()
-    {
-        TotalBalance = await _accountService.GetTotalBalanceAsync();
-        TotalExpenses = await _transactionService.GetTotalExpensesCurrentMonthAsync();
-        TotalIncome = await _transactionService.GetTotalIncomeCurrentMonthAsync();
+        private decimal _totalBalance;
+        public decimal TotalBalance { get => _totalBalance; set { _totalBalance = value; this.Raise(); } }
 
-        Categories.Clear();
-        var list = await _categoryService.GetCategoryBreakdownAsync();
-        foreach (var c in list)
-            Categories.Add(c);
+        private decimal _totalExpenses;
+        public decimal TotalExpenses { get => _totalExpenses; set { _totalExpenses = value; this.Raise(); } }
+
+        private decimal _totalIncome;
+        public decimal TotalIncome { get => _totalIncome; set { _totalIncome = value; this.Raise(); } }
+
+        public ObservableCollection<CategoryBreakdownDto> Categories { get; } = new ObservableCollection<CategoryBreakdownDto>();
+
+        public DashboardViewModel(IAccountService accountService, ITransactionService transactionService, ICategoryService categoryService)
+        {
+            _accountService = accountService;
+            _transactionService = transactionService;
+            _categoryService = categoryService;
+        }
+
+        public async Task LoadAsync()
+        {
+            this.TotalBalance = await _accountService.GetTotalBalanceAsync();
+            this.TotalExpenses = await _transactionService.GetTotalExpensesCurrentMonthAsync();
+            this.TotalIncome = await _transactionService.GetTotalIncomeCurrentMonthAsync();
+
+            this.Categories.Clear();
+            var list = await _categoryService.GetCategoryBreakdownAsync();
+            foreach (var c in list)
+                this.Categories.Add(c);
+        }
     }
 }

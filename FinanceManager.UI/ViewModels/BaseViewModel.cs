@@ -1,14 +1,19 @@
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
+// <copyright file="BaseViewModel.cs" company="LNU">
+// Copyright (c) LNU. All rights reserved.
+// </copyright>
 
-namespace FinanceManager.UI.ViewModels;
-
-public abstract class BaseViewModel : INotifyPropertyChanged
+namespace FinanceManager.UI.ViewModels
 {
-    public event PropertyChangedEventHandler PropertyChanged;
+    using System.ComponentModel;
+    using System.Runtime.CompilerServices;
 
-    protected void Raise([CallerMemberName] string name = null)
+    public abstract class BaseViewModel : INotifyPropertyChanged
     {
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        protected void Raise([CallerMemberName] string name = null)
+        {
+            this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+        }
     }
 }

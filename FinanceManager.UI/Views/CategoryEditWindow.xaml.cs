@@ -1,55 +1,62 @@
-using System;
-using System.Linq;
-using System.Windows;
-using FinanceManager.BLL.Models;
-using FinanceManager.Enums;
-
-namespace FinanceManager.UI.Views;
-
-public partial class CategoryEditWindow : Window
+namespace FinanceManager.UI.Views
 {
-    public CategoryDto Category { get; private set; }
+    // <copyright file="CategoryEditWindow.xaml.cs" company="LNU">
+    // Copyright (c) LNU. All rights reserved.
+    // </copyright>
 
-    public CategoryEditWindow()
+    using System;
+    using System.Linq;
+    using System.Windows;
+    using FinanceManager.BLL.Models;
+    using FinanceManager.Enums;
+
+    public partial class CategoryEditWindow : Window
     {
-        InitializeComponent();
-        Category = new CategoryDto { ProfileId = 1, Type = CategoryType.Expense };
-        CmbType.ItemsSource = Enum.GetValues(typeof(CategoryType)).Cast<CategoryType>();
-        CmbType.SelectedItem = Category.Type;
+        public CategoryDto Category { get; private set; }
 
-        BtnOk.Click += BtnOk_Click;
-        BtnCancel.Click += (_, __) => DialogResult = false;
-    }
-
-    public CategoryEditWindow(CategoryDto existing) : this()
-    {
-        Category = new CategoryDto
+        public CategoryEditWindow()
         {
-            CategoryId = existing.CategoryId,
-            ProfileId = existing.ProfileId,
-            Name = existing.Name,
-            Type = existing.Type,
-            Icon = existing.Icon,
-            ColorHex = existing.ColorHex
-        };
-        TxtName.Text = Category.Name;
-        TxtColor.Text = Category.ColorHex;
-        CmbType.SelectedItem = Category.Type;
-    }
+            InitializeComponent();
+            this.Category = new CategoryDto { ProfileId = 1, Type = CategoryType.Expense };
+            this.CmbType.ItemsSource = Enum.GetValues(typeof(CategoryType)).Cast<CategoryType>();
+            this.CmbType.SelectedItem = this.Category.Type;
 
-    private void BtnOk_Click(object sender, RoutedEventArgs e)
-    {
-        Category.Name = TxtName.Text?.Trim() ?? string.Empty;
-        Category.ColorHex = TxtColor.Text?.Trim();
-        if (CmbType.SelectedItem is CategoryType ct)
-            Category.Type = ct;
-
-        if (string.IsNullOrWhiteSpace(Category.Name))
-        {
-            MessageBox.Show("Name is required", "Validation", MessageBoxButton.OK, MessageBoxImage.Warning);
-            return;
+            this.BtnOk.Click += BtnOk_Click;
+            this.BtnCancel.Click += (_, __) => DialogResult = false;
         }
 
-        DialogResult = true;
+        public CategoryEditWindow(CategoryDto existing) : this()
+        {
+            this.Category = new CategoryDto
+            {
+                CategoryId = existing.CategoryId,
+                ProfileId = existing.ProfileId,
+                Name = existing.Name,
+                Type = existing.Type,
+                Icon = existing.Icon,
+                ColorHex = existing.ColorHex
+            };
+            this.TxtName.Text = this.Category.Name;
+            this.TxtColor.Text = this.Category.ColorHex;
+            this.CmbType.SelectedItem = this.Category.Type;
+        }
+
+        private void BtnOk_Click(object sender, RoutedEventArgs e)
+        {
+            this.Category.Name = this.TxtName.Text?.Trim() ?? string.Empty;
+            this.Category.ColorHex = this.TxtColor.Text?.Trim();
+            if (this.CmbType.SelectedItem is CategoryType ct)
+            {
+                this.Category.Type = ct;
+            }
+
+            if (string.IsNullOrWhiteSpace(this.Category.Name))
+            {
+                MessageBox.Show("Name is required", "Validation", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            DialogResult = true;
+        }
     }
 }

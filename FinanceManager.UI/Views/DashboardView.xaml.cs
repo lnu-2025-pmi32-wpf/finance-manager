@@ -1,30 +1,35 @@
-using System.Windows;
-using System.Windows.Controls;
-using FinanceManager.UI.ViewModels;
-
-namespace FinanceManager.UI.Views;
-
-public partial class DashboardView : UserControl
+namespace FinanceManager.UI.Views
 {
-    public DashboardView(DashboardViewModel vm)
-    {
-        InitializeComponent();
-        DataContext = vm;
-        Loaded += async (s, e) => await vm.LoadAsync();
-    }
+    // <copyright file="DashboardView.xaml.cs" company="LNU">
+    // Copyright (c) LNU. All rights reserved.
+    // </copyright>
 
-    private void AddIncome_Click(object sender, RoutedEventArgs e)
-    {
-        MessageBox.Show("Add Income - not implemented yet");
-    }
+    using System.Windows;
+    using System.Windows.Controls;
+    using FinanceManager.UI.ViewModels;
 
-    private void AddExpense_Click(object sender, RoutedEventArgs e)
+    public partial class DashboardView : UserControl
     {
-        MessageBox.Show("Add Expense - not implemented yet");
-    }
+        public DashboardView(DashboardViewModel vm)
+        {
+            InitializeComponent();
+            this.DataContext = vm;
+            this.Loaded += async (s, e) => await vm.LoadAsync();
+        }
 
-    private void ViewTransactions_Click(object sender, RoutedEventArgs e)
-    {
-        MessageBox.Show("View Transactions - not implemented yet");
+        private void AddIncome_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("Add Income - not implemented yet");
+        }
+
+        private void AddExpense_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("Add Expense - not implemented yet");
+        }
+
+        private void ViewTransactions_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("View Transactions - not implemented yet");
+        }
     }
 }

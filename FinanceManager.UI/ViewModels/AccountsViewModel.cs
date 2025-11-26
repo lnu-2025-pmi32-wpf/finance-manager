@@ -1,56 +1,61 @@
-using System.Collections.ObjectModel;
-using System.Threading.Tasks;
-using FinanceManager.BLL.Models;
-using FinanceManager.BLL.Services;
+// <copyright file="AccountsViewModel.cs" company="LNU">
+// Copyright (c) LNU. All rights reserved.
+// </copyright>
 
-namespace FinanceManager.UI.ViewModels;
-
-public class AccountsViewModel : BaseViewModel
+namespace FinanceManager.UI.ViewModels
 {
-    private readonly IAccountService _accountService;
+    using System.Collections.ObjectModel;
+    using System.Threading.Tasks;
+    using FinanceManager.BLL.Models;
+    using FinanceManager.BLL.Services;
 
-    public ObservableCollection<AccountDto> Accounts { get; } = new ObservableCollection<AccountDto>();
-
-    private AccountDto? _selected;
-    public AccountDto? Selected
+    public class AccountsViewModel : BaseViewModel
     {
-        get => _selected;
-        set { _selected = value; Raise(); }
-    }
+        private readonly IAccountService _accountService;
 
-    public RelayCommand RefreshCommand { get; }
-    public RelayCommand DeleteCommand { get; }
+        public ObservableCollection<AccountDto> Accounts { get; } = new ObservableCollection<AccountDto>();
 
-    public AccountsViewModel(IAccountService accountService)
-    {
-        _accountService = accountService;
-        RefreshCommand = new RelayCommand(async _ => await LoadAsync());
-        DeleteCommand = new RelayCommand(async _ => await DeleteSelected(), _ => Selected != null);
-    }
+        private AccountDto? _selected;
+        public AccountDto? Selected
+        {
+            get => _selected;
+            set { _selected = value; this.Raise(); }
+        }
 
-    public async Task LoadAsync()
-    {
-        Accounts.Clear();
-        var list = await _accountService.GetAllAsync();
-        foreach (var a in list)
-            Accounts.Add(a);
-        Raise(nameof(Accounts));
-    }
+        public RelayCommand RefreshCommand { get; }
+        public RelayCommand DeleteCommand { get; }
 
-    public async Task DeleteSelected()
-    {
-        if (Selected == null) return;
-        await _accountService.DeleteAsync(Selected.AccountId);
-        await LoadAsync();
-    }
+        public AccountsViewModel(IAccountService accountService)
+        {
+            _accountService = accountService;
+            this.RefreshCommand = new RelayCommand(async _ => await this.LoadAsync());
+            this.DeleteCommand = new RelayCommand(async _ => await this.DeleteSelected(), _ => this.Selected != null);
+        }
 
-    public async Task<AccountDto> CreateAsync(AccountDto dto)
-    {
-        return await _accountService.CreateAsync(dto);
-    }
+        public async Task LoadAsync()
+        {
+            this.Accounts.Clear();
+            var list = await _accountService.GetAllAsync();
+            foreach (var a in list)
+                this.Accounts.Add(a);
+            this.Raise(nameof(Accounts));
+        }
 
-    public async Task<bool> UpdateAsync(AccountDto dto)
-    {
-        return await _accountService.UpdateAsync(dto);
+        public async Task DeleteSelected()
+        {
+            if (this.Selected == null) return;
+            await _accountService.DeleteAsync(this.Selected.AccountId);
+            await this.LoadAsync();
+        }
+
+        public async Task<AccountDto> CreateAsync(AccountDto dto)
+        {
+            return await _accountService.CreateAsync(dto);
+        }
+
+        public async Task<bool> UpdateAsync(AccountDto dto)
+        {
+            return await _accountService.UpdateAsync(dto);
+        }
     }
 }

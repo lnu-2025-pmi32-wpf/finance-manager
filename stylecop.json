@@ -1,0 +1,11 @@
+{
+  "settings": {
+    "documentationRules": {
+      "companyName": "LNU",
+      "copyrightText": "Copyright (c) LNU. All rights reserved."
+    },
+    "fileHeader": {
+      "headerTemplate": "// <copyright file=\"{fileName}\" company=\"LNU\">\\n// Copyright (c) LNU. All rights reserved.\\n// </copyright>"
+    }
+  }
+}
