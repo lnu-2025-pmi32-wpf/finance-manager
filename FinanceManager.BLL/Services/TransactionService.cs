@@ -115,8 +115,16 @@ public class TransactionService : ITransactionService
             TransactionDateTime = DateTime.SpecifyKind(dto.TransactionDateTime, DateTimeKind.Utc),
             Description = dto.Description
         };
+        // Apply transaction and update account balance atomically
+        var account = await _db.Accounts.FindAsync(entity.AccountId);
+        if (account == null)
+            throw new ArgumentException("Account not found for the transaction");
+
+        // add transaction and adjust account balance in same SaveChanges
         _db.Transactions.Add(entity);
+        account.Balance += entity.Amount;
         await _db.SaveChangesAsync();
+
         dto.TransactionId = entity.TransactionId;
         return dto;
     }
@@ -125,9 +133,30 @@ public class TransactionService : ITransactionService
     {
     var e = await _db.Transactions.FindAsync(dto.TransactionId);
         if (e == null) return false;
-    e.AccountId = dto.AccountId ?? e.AccountId;
+    // adjust account balances if needed
+    var oldAmount = e.Amount;
+    var oldAccountId = e.AccountId;
+
+    var newAccountId = dto.AccountId ?? e.AccountId;
+    var newAmount = dto.Amount;
+
+    if (oldAccountId != newAccountId)
+    {
+        var oldAccount = await _db.Accounts.FindAsync(oldAccountId);
+        var newAccount = await _db.Accounts.FindAsync(newAccountId);
+        if (oldAccount != null) oldAccount.Balance -= oldAmount;
+        if (newAccount != null) newAccount.Balance += newAmount;
+    }
+    else
+    {
+        var acct = await _db.Accounts.FindAsync(newAccountId);
+        if (acct != null)
+            acct.Balance += (newAmount - oldAmount);
+    }
+
+    e.AccountId = newAccountId;
     e.CategoryId = dto.CategoryId;
-        e.Amount = dto.Amount;
+        e.Amount = newAmount;
         e.TransactionDateTime = DateTime.SpecifyKind(dto.TransactionDateTime, DateTimeKind.Utc);
     e.Description = dto.Description;
         await _db.SaveChangesAsync();
@@ -138,6 +167,10 @@ public class TransactionService : ITransactionService
     {
         var e = await _db.Transactions.FindAsync(id);
         if (e == null) return false;
+        var account = await _db.Accounts.FindAsync(e.AccountId);
+        if (account != null)
+            account.Balance -= e.Amount;
+
         _db.Transactions.Remove(e);
         await _db.SaveChangesAsync();
         return true;

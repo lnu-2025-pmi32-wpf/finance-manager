@@ -1,88 +1,111 @@
-// <copyright file="TransactionsViewModel.cs" company="LNU">
-// Copyright (c) LNU. All rights reserved.
-// </copyright>
+using System.Collections.ObjectModel;
+using System.Threading.Tasks;
+using FinanceManager.BLL.Models;
+using FinanceManager.BLL.Services;
+using System;
 
-namespace FinanceManager.UI.ViewModels
+namespace FinanceManager.UI.ViewModels;
+
+public class TransactionsViewModel : BaseViewModel
 {
-    using System.Collections.ObjectModel;
-    using System.Threading.Tasks;
-    using FinanceManager.BLL.Models;
-    using FinanceManager.BLL.Services;
-    using System;
+    private readonly ITransactionService _transactionService;
+    private readonly IAccountService _accountService;
+    private readonly ICategoryService _categoryService;
 
-    public class TransactionsViewModel : BaseViewModel
+    public ObservableCollection<TransactionDto> Transactions { get; } = new ObservableCollection<TransactionDto>();
+    public ObservableCollection<TransactionListItem> Items { get; } = new ObservableCollection<TransactionListItem>();
+    public System.Collections.ObjectModel.ObservableCollection<AccountDto> Accounts { get; } = new System.Collections.ObjectModel.ObservableCollection<AccountDto>();
+    public System.Collections.ObjectModel.ObservableCollection<CategoryDto> Categories { get; } = new System.Collections.ObjectModel.ObservableCollection<CategoryDto>();
+
+    private TransactionDto? _selected;
+    public TransactionDto? Selected
     {
-        private readonly ITransactionService _transactionService;
-        private readonly IAccountService _accountService;
-        private readonly ICategoryService _categoryService;
+        get => _selected;
+        set { _selected = value; Raise(); }
+    }
 
-        public ObservableCollection<TransactionDto> Transactions { get; } = new ObservableCollection<TransactionDto>();
-        public ObservableCollection<AccountDto> Accounts { get; } = new ObservableCollection<AccountDto>();
-        public ObservableCollection<CategoryDto> Categories { get; } = new ObservableCollection<CategoryDto>();
+    public RelayCommand RefreshCommand { get; }
+    public RelayCommand DeleteCommand { get; }
 
-        private TransactionDto? _selected;
-        public TransactionDto? Selected
+    public string FilterType { get; set; }
+    public string SearchText { get; set; }
+
+    public TransactionsViewModel(ITransactionService transactionService, IAccountService accountService, ICategoryService categoryService)
+    {
+        _transactionService = transactionService;
+        _accountService = accountService;
+        _categoryService = categoryService;
+        RefreshCommand = new RelayCommand(async _ => await LoadAsync());
+        DeleteCommand = new RelayCommand(async _ => await DeleteSelected(), _ => Selected != null);
+    }
+
+    public async Task LoadAsync()
+    {
+        Transactions.Clear();
+        Items.Clear();
+        var q = new TransactionQuery
         {
-            get => _selected;
-            set { _selected = value; this.Raise(); }
-        }
+            Search = string.IsNullOrWhiteSpace(SearchText) ? null : SearchText,
+            Type = string.IsNullOrWhiteSpace(FilterType) ? null : FilterType
+        };
+        var list = await _transactionService.GetAllAsync(q);
 
-        public RelayCommand RefreshCommand { get; }
-        public RelayCommand DeleteCommand { get; }
+        // load categories mapping for names/types
+        var cats = await _categoryService.GetAllAsync();
+        var catMap = new System.Collections.Generic.Dictionary<int, (string name, string type)>();
+        foreach (var c in cats)
+            catMap[c.CategoryId] = (c.Name ?? "", c.Type.ToString());
 
-        public string FilterType { get; set; }
-        public string SearchText { get; set; }
-
-        public TransactionsViewModel(ITransactionService transactionService, IAccountService accountService, ICategoryService categoryService)
+        foreach (var t in list)
         {
-            _transactionService = transactionService;
-            _accountService = accountService;
-                _categoryService = categoryService;
-            this.RefreshCommand = new RelayCommand(async _ => await this.LoadAsync());
-            this.DeleteCommand = new RelayCommand(async _ => await this.DeleteSelected(), _ => this.Selected != null);
-        }
-
-        public async Task LoadAsync()
-        {
-            this.Transactions.Clear();
-            var q = new TransactionQuery
+            Transactions.Add(t);
+            var item = new TransactionListItem
             {
-                Search = string.IsNullOrWhiteSpace(this.SearchText) ? null : this.SearchText,
-                Type = string.IsNullOrWhiteSpace(this.FilterType) ? null : this.FilterType
+                TransactionId = t.TransactionId,
+                Description = t.Description,
+                Amount = t.Amount,
+                TransactionDateTime = t.TransactionDateTime,
+                CategoryName = t.CategoryId.HasValue && catMap.ContainsKey(t.CategoryId.Value) ? catMap[t.CategoryId.Value].name : "",
+                CategoryType = t.CategoryId.HasValue && catMap.ContainsKey(t.CategoryId.Value) ? catMap[t.CategoryId.Value].type : ""
             };
-            var list = await _transactionService.GetAllAsync(q);
-            foreach (var t in list)
-                this.Transactions.Add(t);
-            this.Raise(nameof(Transactions));
+            Items.Add(item);
         }
+        Raise(nameof(Transactions));
+        Raise(nameof(Items));
+    }
 
-        public async Task LoadAccountsAndCategoriesAsync()
-        {
-            this.Accounts.Clear();
-            this.Categories.Clear();
-            var a = await _accountService.GetAllAsync();
-            var c = await _categoryService.GetAllAsync();
-            foreach (var x in a) this.Accounts.Add(x);
-            foreach (var x in c) this.Categories.Add(x);
-            this.Raise(nameof(Accounts));
-            this.Raise(nameof(Categories));
-        }
+    public async Task LoadAccountsAndCategoriesAsync()
+    {
+        Accounts.Clear();
+        Categories.Clear();
+        var a = await _accountService.GetAllAsync();
+        var c = await _categoryService.GetAllAsync();
+        foreach (var x in a) Accounts.Add(x);
+        foreach (var x in c) Categories.Add(x);
+        Raise(nameof(Accounts));
+        Raise(nameof(Categories));
+    }
 
-        public async Task<TransactionDto> CreateAsync(TransactionDto dto)
-        {
-            return await _transactionService.CreateAsync(dto);
-        }
+    public async Task<TransactionDto> CreateAsync(TransactionDto dto)
+    {
+        return await _transactionService.CreateAsync(dto);
+    }
 
-        public async Task<bool> UpdateAsync(TransactionDto dto)
-        {
-            return await _transactionService.UpdateAsync(dto);
-        }
+    public async Task<bool> UpdateAsync(TransactionDto dto)
+    {
+        return await _transactionService.UpdateAsync(dto);
+    }
 
-        public async Task DeleteSelected()
-        {
-            if (this.Selected == null) return;
-            await _transactionService.DeleteAsync(this.Selected.TransactionId);
-            await this.LoadAsync();
-        }
+    public async Task DeleteSelected()
+    {
+        if (Selected == null) return;
+        await _transactionService.DeleteAsync(Selected.TransactionId);
+        await LoadAsync();
+    }
+
+    public async Task DeleteByIdAsync(int id)
+    {
+        await _transactionService.DeleteAsync(id);
+        await LoadAsync();
     }
 }
