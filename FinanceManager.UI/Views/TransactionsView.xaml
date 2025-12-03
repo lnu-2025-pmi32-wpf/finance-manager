@@ -8,8 +8,15 @@
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
         <conv:AmountToBrushConverter x:Key="AmountToBrushConverter" />
+        <Storyboard x:Key="EnterAnimation">
+            <DoubleAnimation Storyboard.TargetName="RootGrid" Storyboard.TargetProperty="Opacity" From="0" To="1" Duration="0:0:0.35" />
+            <DoubleAnimation Storyboard.TargetName="RootGrid" Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.Y)" From="20" To="0" Duration="0:0:0.35" />
+        </Storyboard>
     </UserControl.Resources>
-    <Grid Margin="16">
+    <UserControl.RenderTransform>
+        <TranslateTransform Y="0" />
+    </UserControl.RenderTransform>
+    <Grid x:Name="RootGrid" Margin="16" Opacity="0">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />

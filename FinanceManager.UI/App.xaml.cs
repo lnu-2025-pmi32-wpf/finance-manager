@@ -15,6 +15,8 @@ namespace FinanceManager.UI
     public partial class App : Application
     {
         private IServiceProvider serviceProvider;
+        private static readonly string LogDirectory = Path.Combine(Directory.GetCurrentDirectory(), "logs");
+        private static readonly string LogFilePath = Path.Combine(LogDirectory, "app.log");
 
         protected override void OnStartup(StartupEventArgs e)
         {
@@ -57,6 +59,9 @@ namespace FinanceManager.UI
                 services.AddScoped<IAnalyticsService, FinanceManager.BLL.Services.AnalyticsService>();
 
                 // UI
+                // App logging
+                services.AddSingleton<Services.IAppLogger, Services.FileLogger>();
+
                 services.AddTransient<MainWindow>();
                 services.AddTransient<Views.DashboardView>();
                 services.AddScoped<ViewModels.DashboardViewModel>();
@@ -80,6 +85,24 @@ namespace FinanceManager.UI
 
                 var mainWindow = this.serviceProvider.GetRequiredService<MainWindow>();
                 mainWindow.Show();
+
+                // Log application start (use DI logger if available)
+                try
+                {
+                    var logger = this.serviceProvider.GetService<Services.IAppLogger>();
+                    if (logger != null)
+                    {
+                        logger.Info("Application started");
+                    }
+                    else
+                    {
+                        WriteLog("INFO", "Application started");
+                    }
+                }
+                catch
+                {
+                    // swallow logging errors during startup
+                }
             }
             catch (Exception ex)
             {
@@ -88,18 +111,79 @@ namespace FinanceManager.UI
             }
         }
 
+        protected override void OnExit(ExitEventArgs e)
+        {
+            try
+            {
+                var logger = this.serviceProvider?.GetService<Services.IAppLogger>();
+                if (logger != null)
+                {
+                    logger.Info("Application exiting");
+                }
+                else
+                {
+                    WriteLog("INFO", "Application exiting");
+                }
+            }
+            catch
+            {
+                // swallow logging errors
+            }
+
+            base.OnExit(e);
+        }
+
         private void LogAndShowException(Exception ex, string source)
         {
             try
             {
-                var msg = $"[{DateTime.UtcNow:O}] {source}: {ex}\n";
-                var logPath = Path.Combine(Directory.GetCurrentDirectory(), "app_start_error.log");
-                File.AppendAllText(logPath, msg);
-                MessageBox.Show($"Startup error: {ex.Message}\nDetails written to: {logPath}", "Startup error", MessageBoxButton.OK, MessageBoxImage.Error);
+                var fullMsg = $"[{DateTime.UtcNow:O}] {source}: {ex}\n";
+
+                // Prefer DI logger when available
+                try
+                {
+                    var logger = this.serviceProvider?.GetService<Services.IAppLogger>();
+                    if (logger != null)
+                    {
+                        logger.Error(fullMsg);
+                    }
+                    else
+                    {
+                        // Fallback to file-based logging
+                        WriteLog("ERROR", $"{source}: {ex}");
+                    }
+                }
+                catch
+                {
+                    // If anything goes wrong with service-based logging, fallback
+                    WriteLog("ERROR", $"{source}: {ex}");
+                }
+
+                // Also show the exception to the user as before
+                var displayLogPath = LogFilePath;
+                MessageBox.Show($"Startup error: {ex.Message}\nDetails written to: {displayLogPath}", "Startup error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             catch
             {
                 // swallow any logging errors
+            }
+        }
+
+        private static void WriteLog(string level, string message)
+        {
+            try
+            {
+                if (!Directory.Exists(LogDirectory))
+                {
+                    Directory.CreateDirectory(LogDirectory);
+                }
+
+                var line = $"[{DateTime.UtcNow:O}] {level}: {message}{Environment.NewLine}";
+                File.AppendAllText(LogFilePath, line);
+            }
+            catch
+            {
+                // swallow - logging should not crash the app
             }
         }
     }

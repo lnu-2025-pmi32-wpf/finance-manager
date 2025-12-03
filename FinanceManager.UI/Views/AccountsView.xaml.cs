@@ -6,23 +6,47 @@ namespace FinanceManager.UI.Views
 
     using System.Windows;
     using System.Windows.Controls;
+    using System.Windows.Media.Animation;
     using FinanceManager.UI.ViewModels;
+    using FinanceManager.UI.Services;
 
     public partial class AccountsView : UserControl
     {
         private readonly AccountsViewModel vm;
+        private readonly IAppLogger _logger;
 
-        public AccountsView(AccountsViewModel vm)
+        public AccountsView(AccountsViewModel vm, IAppLogger logger)
         {
             InitializeComponent();
             this.vm = vm;
+            this._logger = logger;
             this.DataContext = this.vm;
 
-            this.Loaded += async (_, __) => await this.vm.LoadAsync();
+            this.Loaded += AccountsView_Loaded;
 
             this.BtnAdd.Click += BtnAdd_Click;
             this.BtnEdit.Click += BtnEdit_Click;
             this.BtnDelete.Click += async (_, __) => await this.vm.DeleteSelected();
+        }
+
+        private async void AccountsView_Loaded(object? sender, RoutedEventArgs e)
+        {
+            try
+            {
+                _logger?.Info("AccountsView loaded");
+                // start enter animation if present
+                if (FindResource("EnterAnimation") is Storyboard sb)
+                {
+                    sb.Begin(this);
+                    _logger?.Trace("AccountsView enter animation started");
+                }
+
+                await this.vm.LoadAsync();
+            }
+            catch (System.Exception ex)
+            {
+                _logger?.Error($"AccountsView load error: {ex}");
+            }
         }
 
         private void BtnAdd_Click(object sender, RoutedEventArgs e)

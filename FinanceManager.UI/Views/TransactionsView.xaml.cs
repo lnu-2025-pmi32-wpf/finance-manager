@@ -4,24 +4,42 @@ using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media.Animation;
 using FinanceManager.UI.ViewModels;
+using FinanceManager.UI.Services;
 
 namespace FinanceManager.UI.Views;
 
 public partial class TransactionsView : UserControl
 {
     private readonly TransactionsViewModel _vm;
+    private readonly IAppLogger _logger;
 
-    public TransactionsView(TransactionsViewModel vm)
+    public TransactionsView(TransactionsViewModel vm, IAppLogger logger)
     {
         InitializeComponent();
         _vm = vm;
+        _logger = logger;
         DataContext = _vm;
 
         Loaded += async (_, __) =>
         {
-            await _vm.LoadAccountsAndCategoriesAsync();
-            await _vm.LoadAsync();
+            try
+            {
+                _logger?.Info("TransactionsView loaded");
+                if (FindResource("EnterAnimation") is Storyboard sb)
+                {
+                    sb.Begin(this);
+                    _logger?.Trace("TransactionsView enter animation started");
+                }
+
+                await _vm.LoadAccountsAndCategoriesAsync();
+                await _vm.LoadAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger?.Error($"TransactionsView load error: {ex}");
+            }
         };
 
         BtnRefresh.Click += async (_, __) =>
@@ -32,31 +50,49 @@ public partial class TransactionsView : UserControl
         };
 
         BtnExport.Click += (_, __) => ExportCsv();
-    BtnAdd.Click += BtnAdd_Click;
+        BtnAdd.Click += BtnAdd_Click;
     }
 
     private async void BtnAdd_Click(object sender, RoutedEventArgs e)
     {
-        await _vm.LoadAccountsAndCategoriesAsync();
-        var dlg = new TransactionEditWindow(_vm.Accounts, _vm.Categories) { Owner = Window.GetWindow(this) };
-        if (dlg.ShowDialog() == true)
+        try
         {
-            var dto = dlg.Transaction;
-            await _vm.CreateAsync(dto);
-            await _vm.LoadAsync();
+            await _vm.LoadAccountsAndCategoriesAsync();
+            var dlg = new TransactionEditWindow(_vm.Accounts, _vm.Categories) { Owner = Window.GetWindow(this) };
+            if (dlg.ShowDialog() == true)
+            {
+                var dto = dlg.Transaction;
+                _logger?.Info($"Creating transaction: {dto.Description} {dto.Amount}");
+                await _vm.CreateAsync(dto);
+                _logger?.Info($"Transaction created: {dto.TransactionId}");
+                await _vm.LoadAsync();
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger?.Error($"Error creating transaction: {ex}");
         }
     }
 
     private async void BtnEdit_Click(object sender, RoutedEventArgs e)
     {
-        if (_vm.Selected == null) return;
-        await _vm.LoadAccountsAndCategoriesAsync();
-        var dlg = new TransactionEditWindow(_vm.Selected, _vm.Accounts, _vm.Categories) { Owner = Window.GetWindow(this) };
-        if (dlg.ShowDialog() == true)
+        try
         {
-            var dto = dlg.Transaction;
-            await _vm.UpdateAsync(dto);
-            await _vm.LoadAsync();
+            if (_vm.Selected == null) return;
+            await _vm.LoadAccountsAndCategoriesAsync();
+            var dlg = new TransactionEditWindow(_vm.Selected, _vm.Accounts, _vm.Categories) { Owner = Window.GetWindow(this) };
+            if (dlg.ShowDialog() == true)
+            {
+                var dto = dlg.Transaction;
+                _logger?.Info($"Updating transaction: {dto.TransactionId}");
+                await _vm.UpdateAsync(dto);
+                _logger?.Info($"Transaction updated: {dto.TransactionId}");
+                await _vm.LoadAsync();
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger?.Error($"Error updating transaction: {ex}");
         }
     }
 
@@ -83,33 +119,51 @@ public partial class TransactionsView : UserControl
 
     private async void OnDeleteItem(object sender, RoutedEventArgs e)
     {
-        if (sender is FrameworkElement fe && fe.DataContext is ViewModels.TransactionListItem item)
+        try
         {
-            // find underlying TransactionDto
-            var dto = _vm.Transactions.FirstOrDefault(t => t.TransactionId == item.TransactionId);
-            if (dto == null) return;
-            var ok = MessageBox.Show($"Delete transaction #{dto.TransactionId}?", "Confirm", MessageBoxButton.YesNo, MessageBoxImage.Question);
-            if (ok == MessageBoxResult.Yes)
+            if (sender is FrameworkElement fe && fe.DataContext is ViewModels.TransactionListItem item)
             {
-                await _vm.DeleteByIdAsync(dto.TransactionId);
+                // find underlying TransactionDto
+                var dto = _vm.Transactions.FirstOrDefault(t => t.TransactionId == item.TransactionId);
+                if (dto == null) return;
+                var ok = MessageBox.Show($"Delete transaction #{dto.TransactionId}?", "Confirm", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                if (ok == MessageBoxResult.Yes)
+                {
+                    _logger?.Info($"Deleting transaction: {dto.TransactionId}");
+                    await _vm.DeleteByIdAsync(dto.TransactionId);
+                    _logger?.Info($"Transaction deleted: {dto.TransactionId}");
+                }
             }
+        }
+        catch (Exception ex)
+        {
+            _logger?.Error($"Error deleting transaction: {ex}");
         }
     }
 
     private async void OnEditItem(object sender, RoutedEventArgs e)
     {
-        if (sender is FrameworkElement fe && fe.DataContext is ViewModels.TransactionListItem item)
+        try
         {
-            var dto = _vm.Transactions.FirstOrDefault(t => t.TransactionId == item.TransactionId);
-            if (dto == null) return;
-            await _vm.LoadAccountsAndCategoriesAsync();
-            var dlg = new TransactionEditWindow(dto, _vm.Accounts, _vm.Categories) { Owner = Window.GetWindow(this) };
-            if (dlg.ShowDialog() == true)
+            if (sender is FrameworkElement fe && fe.DataContext is ViewModels.TransactionListItem item)
             {
-                var updated = dlg.Transaction;
-                await _vm.UpdateAsync(updated);
-                await _vm.LoadAsync();
+                var dto = _vm.Transactions.FirstOrDefault(t => t.TransactionId == item.TransactionId);
+                if (dto == null) return;
+                await _vm.LoadAccountsAndCategoriesAsync();
+                var dlg = new TransactionEditWindow(dto, _vm.Accounts, _vm.Categories) { Owner = Window.GetWindow(this) };
+                if (dlg.ShowDialog() == true)
+                {
+                    var updated = dlg.Transaction;
+                    _logger?.Info($"Updating transaction from item: {updated.TransactionId}");
+                    await _vm.UpdateAsync(updated);
+                    _logger?.Info($"Transaction updated: {updated.TransactionId}");
+                    await _vm.LoadAsync();
+                }
             }
+        }
+        catch (Exception ex)
+        {
+            _logger?.Error($"Error editing transaction: {ex}");
         }
     }
 }
