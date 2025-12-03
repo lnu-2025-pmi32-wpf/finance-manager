@@ -5,26 +5,58 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <Grid Margin="16">
+    <Grid Background="#071026" Margin="16">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
+                       <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-            <Button x:Name="BtnAdd" Content="Add Category" Margin="4" Padding="8,6"/>
-            <Button x:Name="BtnEdit" Content="Edit" Margin="4" Padding="8,6"/>
-            <Button x:Name="BtnDelete" Content="Delete" Margin="4" Padding="8,6"/>
+        <!-- Header -->
+        <StackPanel Orientation="Vertical" Grid.Row="0">
+            <TextBlock Text="Categories" FontSize="28" Foreground="White" FontWeight="Bold" />
+            <TextBlock Text="Organize your spending and income" Foreground="#94a3b8" Margin="0,4,0,12" />
         </StackPanel>
 
-        <ListView Grid.Row="1" x:Name="CategoriesList" Margin="0,12,0,0" ItemsSource="{Binding Categories}" SelectedItem="{Binding Selected, Mode=TwoWay}">
+        <!-- Action Buttons -->
+        <StackPanel Orientation="Horizontal" Grid.Row="1" HorizontalAlignment="Right" Margin="0,0,0,16">
+            <Button x:Name="BtnAdd" Content="+ Add Category" Margin="0,0,8,0" Padding="12,8" Background="#3be07a" Foreground="White" BorderBrush="Transparent" />
+            <Button x:Name="BtnEdit" Content="Edit" Margin="0,0,8,0" Padding="12,8" Background="#0f4a7a" Foreground="White" BorderBrush="Transparent" />
+            <Button x:Name="BtnDelete" Content="Delete" Padding="12,8" Background="#ff6b6b" Foreground="White" BorderBrush="Transparent" />
+        </StackPanel>
+
+        <!-- Categories List -->
+        <Border Grid.Row="2" Background="#0b1626" CornerRadius="6" Padding="0" Margin="0">
+            <ListView x:Name="CategoriesList" ItemsSource="{Binding Categories}" SelectedItem="{Binding Selected, Mode=TwoWay}" Background="Transparent" BorderThickness="0">
             <ListView.View>
                 <GridView>
-                    <GridViewColumn Header="Name" Width="200" DisplayMemberBinding="{Binding Name}" />
-                    <GridViewColumn Header="Type" Width="120" DisplayMemberBinding="{Binding Type}" />
-                    <GridViewColumn Header="Color" Width="100" DisplayMemberBinding="{Binding ColorHex}" />
+                    <GridViewColumn Header="Name" Width="250">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Name}" Foreground="#e6f0fb" Margin="8,4" />
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="Type" Width="150">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Type}" Foreground="#94a3b8" Margin="8,4" />
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="Color" Width="150">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal" Margin="8,4">
+                                    <Border Background="{Binding ColorHex}" Width="20" Height="20" CornerRadius="3" Margin="0,0,8,0" />
+                                    <TextBlock Text="{Binding ColorHex}" Foreground="#94a3b8" VerticalAlignment="Center" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
                 </GridView>
             </ListView.View>
-        </ListView>
+            </ListView>
+        </Border>
     </Grid>
 </UserControl>
