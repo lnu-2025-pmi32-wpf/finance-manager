@@ -14,14 +14,16 @@ namespace FinanceManager.UI
         private readonly Views.CategoriesView categoriesView;
         private readonly Views.AccountsView accountsView;
         private readonly Views.TransactionsView transactionsView;
+        private readonly Views.AnalyticsView analyticsView;
 
-        public MainWindow(DashboardView dashboardView, Views.CategoriesView categoriesView, Views.AccountsView accountsView, Views.TransactionsView transactionsView)
+        public MainWindow(DashboardView dashboardView, Views.CategoriesView categoriesView, Views.AccountsView accountsView, Views.TransactionsView transactionsView, Views.AnalyticsView analyticsView)
         {
             InitializeComponent();
             this.dashboardView = dashboardView;
             this.categoriesView = categoriesView;
             this.accountsView = accountsView;
             this.transactionsView = transactionsView;
+            this.analyticsView = analyticsView;
 
             // show dashboard by default
             ContentArea.Content = this.dashboardView;
@@ -54,7 +56,7 @@ namespace FinanceManager.UI
 
         private void NavAnalytics_Click(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("Analytics view not implemented yet");
+            ContentArea.Content = this.analyticsView;
         }
     }
 }

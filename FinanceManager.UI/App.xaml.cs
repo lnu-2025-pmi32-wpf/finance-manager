@@ -54,6 +54,7 @@ namespace FinanceManager.UI
                 services.AddScoped<IAccountService, FinanceManager.BLL.Services.AccountService>();
                 services.AddScoped<ITransactionService, FinanceManager.BLL.Services.TransactionService>();
                 services.AddScoped<ICategoryService, FinanceManager.BLL.Services.CategoryService>();
+                services.AddScoped<IAnalyticsService, FinanceManager.BLL.Services.AnalyticsService>();
 
                 // UI
                 services.AddTransient<MainWindow>();
@@ -65,6 +66,8 @@ namespace FinanceManager.UI
                 services.AddScoped<ViewModels.AccountsViewModel>();
                 services.AddTransient<Views.TransactionsView>();
                 services.AddScoped<ViewModels.TransactionsViewModel>();
+                services.AddTransient<Views.AnalyticsView>();
+                services.AddScoped<ViewModels.AnalyticsViewModel>();
 
                 this.serviceProvider = services.BuildServiceProvider();
 
